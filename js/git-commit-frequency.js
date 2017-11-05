@@ -46,7 +46,7 @@ function setDayLabels() {
       .attr("y", function (d, i) { return i * gridSize; })
       .style("text-anchor", "end")
       .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
-      .attr("class", function (d, i) { return ((i >= 0 && i <= 4) ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis"); });
+      .attr("class", function (d, i) { return "dayLabel mono axis"; });
 }
 
 function setTimeLabels() {
@@ -58,7 +58,7 @@ function setTimeLabels() {
       .attr("y", 0)
       .style("text-anchor", "middle")
       .attr("transform", "translate(" + gridSize / 2 + ", -6)")
-      .attr("class", function(d, i) { return ((i >= 7 && i <= 16) ? "timeLabel mono axis axis-worktime" : "timeLabel mono axis"); });
+      .attr("class", function(d, i) { return "timeLabel mono axis"; });
 }
 
 var heatmapChart = function(jsonFile) {
