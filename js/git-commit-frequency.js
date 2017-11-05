@@ -1,13 +1,13 @@
 var margin = { top: 50, right: 0, bottom: 100, left: 30 },
     width = 960 - margin.left - margin.right,
     height = 430 - margin.top - margin.bottom,
-    gridSize = Math.floor(width / 24),
-    legendElementWidth = gridSize*2,
     buckets = 9,
     colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"], // alternatively colorbrewer.YlGnBu[9]
     days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
-    times = ["1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a", "12a", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p", "12p"];
-    datasets = ["data/heatmap.tsv"];
+    times = Array.apply(null, {length: 52}).map(Number.call, function (i) { return i + 1; }); // [1, 2, ..., 52]
+    gridSize = Math.floor(width / times.length),
+    legendElementWidth = gridSize * 2,
+    datasets = ["data/git-commit-frequency.json"];
 
 var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -35,16 +35,24 @@ var timeLabels = svg.selectAll(".timeLabel")
       .attr("transform", "translate(" + gridSize / 2 + ", -6)")
       .attr("class", function(d, i) { return ((i >= 7 && i <= 16) ? "timeLabel mono axis axis-worktime" : "timeLabel mono axis"); });
 
-var heatmapChart = function(tsvFile) {
-  d3.tsv(tsvFile,
-  function(d) {
-    return {
-      day: +d.day,
-      hour: +d.hour,
-      value: +d.value
-    };
-  },
-  function(error, data) {
+var heatmapChart = function(jsonFile) {
+  d3.json(jsonFile,
+  function(jsonData) {
+    /* Start */
+    var data = [];
+    var day = 1;
+    var week = 1;
+    jsonData.forEach(function(d) {
+      for (var i = 0; i < days.length; i++) {
+        data.push({
+          day: i + 1,
+          hour: week, // week
+          value: d.days[i]
+        });
+      }
+      week++;
+    });
+    /* End */
     var colorScale = d3.scale.quantile()
         .domain([0, buckets - 1, d3.max(data, function (d) { return d.value; })])
         .range(colors);
