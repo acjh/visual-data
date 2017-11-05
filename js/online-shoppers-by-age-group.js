@@ -39,6 +39,15 @@ d3.csv("data/online-shoppers-by-age-group.csv", function(d, i, columns) {
   x1.domain(keys).rangeRound([0, x0.bandwidth()]);
   y.domain([0, d3.max(data, function(d) { return d3.max(keys, function(key) { return d[key]; }); })]).nice();
 
+  // Add y-axis gridlines
+  g.append("g")
+    .attr("class", "grid")
+    .call(d3.axisLeft(y)
+        .ticks(10)
+        .tickSize(-width)
+        .tickFormat("")
+    )
+
   g.append("g")
     .selectAll("g")
     .data(data)
