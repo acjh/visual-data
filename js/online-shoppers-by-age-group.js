@@ -48,9 +48,9 @@ d3.csv("data/online-shoppers-by-age-group.csv", function(d, i, columns) {
     .data(function(d) { return keys.map(function(key) { return {key: key, value: d[key]}; }); })
     .enter().append("rect")
       /* Start */
-      .attr("class", getClassesByD)
-      .on("mouseover", fadeOnOthersByD)
-      .on("mouseout", fadeOffAll)
+      .attr("class", function(d) { return getClasses(d.key); })
+      .on("mouseover", function(d) { fadeOnOthers(d.key); })
+      .on("mouseout", function(d) { fadeOffAll(); })
       /* End */
       .attr("x", function(d) { return x1(d.key); })
       .attr("y", function(d) { return y(d.value); })
@@ -86,8 +86,8 @@ d3.csv("data/online-shoppers-by-age-group.csv", function(d, i, columns) {
 
   legend.append("rect")
       /* Start */
-      .attr("class", getClassesByKey)
-      .on("mouseover", fadeOnOthersByKey)
+      .attr("class", getClasses)
+      .on("mouseover", fadeOnOthers)
       .on("mouseout", fadeOffAll)
       /* End */
       .attr("x", width - 19)
@@ -97,8 +97,8 @@ d3.csv("data/online-shoppers-by-age-group.csv", function(d, i, columns) {
 
   legend.append("text")
       /* Start */
-      .attr("class", getClassesByKey)
-      .on("mouseover", fadeOnOthersByKey)
+      .attr("class", getClasses)
+      .on("mouseover", fadeOnOthers)
       .on("mouseout", fadeOffAll)
       /* End */
       .attr("x", width - 24)
@@ -107,7 +107,7 @@ d3.csv("data/online-shoppers-by-age-group.csv", function(d, i, columns) {
       .text(function(d) { return d; });
 });
 
-// Functions - Generic
+// Fade - Generic
 
 function fadeOn(selector) {
   toggleClass(selector, "fade", true);
@@ -125,17 +125,13 @@ function toggleClass(selector, cssClass, force) {
   }
 }
 
-// Functions - Custom
+// Fade - Custom
 
-function fadeOffAll(d) {
+function fadeOffAll() {
   fadeOff("age-all");
 }
 
-function fadeOnOthersByD(d) {
-  fadeOnOthersByKey(d.key);
-}
-
-function fadeOnOthersByKey(key) {
+function fadeOnOthers(key) {
   fadeOn("age-all");
   fadeOff(getAgeClass(key));
 }
@@ -144,10 +140,6 @@ function getAgeClass(key) {
   return "age-" + key.replace(/\s/g, "-"); // e.g. age-60-and-above
 }
 
-function getClassesByD(d) {
-  return getClassesByKey(d.key);
-}
-
-function getClassesByKey(key) {
+function getClasses(key) {
   return "age-all" + " " + getAgeClass(key);
 }
