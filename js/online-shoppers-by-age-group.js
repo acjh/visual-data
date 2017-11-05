@@ -6,7 +6,7 @@ var groupName = "year";
 
 var axisLabelY = "Percentage";
 
-// Base
+// Draw
 
 var svg = d3.select("svg"),
     margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -47,6 +47,11 @@ d3.csv("data/online-shoppers-by-age-group.csv", function(d, i, columns) {
     .selectAll("rect")
     .data(function(d) { return keys.map(function(key) { return {key: key, value: d[key]}; }); })
     .enter().append("rect")
+      /* Start */
+      .attr("class", getClassesByD)
+      .on("mouseover", fadeOnOthersByD)
+      .on("mouseout", fadeOffAll)
+      /* End */
       .attr("x", function(d) { return x1(d.key); })
       .attr("y", function(d) { return y(d.value); })
       .attr("width", x1.bandwidth())
@@ -80,14 +85,69 @@ d3.csv("data/online-shoppers-by-age-group.csv", function(d, i, columns) {
       .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
   legend.append("rect")
+      /* Start */
+      .attr("class", getClassesByKey)
+      .on("mouseover", fadeOnOthersByKey)
+      .on("mouseout", fadeOffAll)
+      /* End */
       .attr("x", width - 19)
       .attr("width", 19)
       .attr("height", 19)
       .attr("fill", z);
 
   legend.append("text")
+      /* Start */
+      .attr("class", getClassesByKey)
+      .on("mouseover", fadeOnOthersByKey)
+      .on("mouseout", fadeOffAll)
+      /* End */
       .attr("x", width - 24)
       .attr("y", 9.5)
       .attr("dy", "0.32em")
       .text(function(d) { return d; });
 });
+
+// Functions - Generic
+
+function fadeOn(selector) {
+  toggleClass(selector, "fade", true);
+}
+
+function fadeOff(selector) {
+  toggleClass(selector, "fade", false);
+}
+
+function toggleClass(selector, cssClass, force) {
+  var nodes = document.getElementsByClassName(selector);
+  for (var i = 0; i < nodes.length; i++)
+  {
+    nodes.item(i).classList.toggle(cssClass, force);
+  }
+}
+
+// Functions - Custom
+
+function fadeOffAll(d) {
+  fadeOff("age-all");
+}
+
+function fadeOnOthersByD(d) {
+  fadeOnOthersByKey(d.key);
+}
+
+function fadeOnOthersByKey(key) {
+  fadeOn("age-all");
+  fadeOff(getAgeClass(key));
+}
+
+function getAgeClass(key) {
+  return "age-" + key.replace(/\s/g, "-"); // e.g. age-60-and-above
+}
+
+function getClassesByD(d) {
+  return getClassesByKey(d.key);
+}
+
+function getClassesByKey(key) {
+  return "age-all" + " " + getAgeClass(key);
+}

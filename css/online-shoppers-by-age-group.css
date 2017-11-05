@@ -1,3 +1,6 @@
 .axis .domain {
   display: none;
 }
+.fade {
+  fill-opacity: 0.1;
+}
