@@ -2,6 +2,10 @@
 
 var groupName = "year";
 
+// Config - d3.js
+
+var axisLabelY = "Percentage";
+
 // Base
 
 var svg = d3.select("svg"),
@@ -64,7 +68,7 @@ d3.csv("data/online-shoppers-by-age-group.csv", function(d, i, columns) {
       .attr("fill", "#000")
       .attr("font-weight", "bold")
       .attr("text-anchor", "start")
-      .text("Population");
+      .text(axisLabelY);
 
   var legend = g.append("g")
       .attr("font-family", "sans-serif")
