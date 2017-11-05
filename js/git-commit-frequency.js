@@ -91,9 +91,14 @@ var heatmapChart = function(jsonFile) {
     var cards = svg.selectAll(".hour")
         .data(data, function(d) {return d.day+':'+d.hour;});
 
-    cards.append("title");
+    // cards.append("title");
 
     cards.enter().append("rect")
+        /* Start */
+        .on("mouseover", function(d) { showTooltip(); })
+        .on("mousemove", function(d) { moveTooltip(d.value); })
+        .on("mouseout", function(d) { hideTooltip(); })
+        /* End */
         .attr("x", function(d) { return (d.hour - 1) * gridSize; })
         .attr("y", function(d) { return (d.day - 1) * gridSize; })
         .attr("rx", 4)
@@ -106,7 +111,7 @@ var heatmapChart = function(jsonFile) {
     cards.transition().duration(1000)
         .style("fill", function(d) { return colorScale(d.value); });
 
-    cards.select("title").text(function(d) { return d.value; });
+    // cards.select("title").text(function(d) { return d.value; });
 
     cards.exit().remove();
 
@@ -155,4 +160,33 @@ document.getElementById("show-all-weeks").onclick = function (e) {
   resetSvg();
   numWeeksToShow = this.checked ? 52 : 25;
   heatmapChart(datasets[0]);
+}
+
+// Tooltip - Generic
+
+var tooltip = d3.select("body")
+	.append("div")
+	.style("position", "absolute")
+	.style("z-index", "10")
+	.style("visibility", "hidden");
+
+// Tooltip - Custom
+
+tooltip
+  .style("background-color", "white")
+  .style("border", "1px solid black")
+  .style("border-radius", "5px")
+  .style("padding", "0 2px");
+
+function hideTooltip() {
+  tooltip.style("visibility", "hidden");
+}
+
+function moveTooltip(value) {
+  tooltip.text(value);
+  tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+}
+
+function showTooltip() {
+  tooltip.style("visibility", "visible");
 }
