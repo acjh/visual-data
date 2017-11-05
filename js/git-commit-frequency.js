@@ -28,6 +28,15 @@ var svg = d3.select("#chart").append("svg")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+function resetSvg() {
+  document.getElementsByTagName("svg")[0].remove();
+  svg = d3.select("#chart").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+}
+
 function setDayLabels() {
   var dayLabels = svg.selectAll(".dayLabel")
     .data(days)
@@ -139,3 +148,11 @@ Date.prototype.getWeekNumber = function(){
 
 numWeeksToShow = 25;
 heatmapChart(datasets[0]);
+
+// Runtime
+
+document.getElementById("show-all-weeks").onclick = function (e) {
+  resetSvg();
+  numWeeksToShow = this.checked ? 52 : 25;
+  heatmapChart(datasets[0]);
+}
