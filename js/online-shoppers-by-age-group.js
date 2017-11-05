@@ -49,8 +49,9 @@ d3.csv("data/online-shoppers-by-age-group.csv", function(d, i, columns) {
     .enter().append("rect")
       /* Start */
       .attr("class", function(d) { return getClasses(d.key); })
-      .on("mouseover", function(d) { fadeOnOthers(d.key); })
-      .on("mouseout", function(d) { fadeOffAll(); })
+      .on("mouseover", function(d) { fadeOnOthers(d.key); showTooltip(); })
+      .on("mousemove", function(d) { moveTooltip(d.key, d.value); })
+      .on("mouseout", function(d) { fadeOffAll(); hideTooltip(); })
       /* End */
       .attr("x", function(d) { return x1(d.key); })
       .attr("y", function(d) { return y(d.value); })
@@ -142,4 +143,33 @@ function getAgeClass(key) {
 
 function getClasses(key) {
   return "age-all" + " " + getAgeClass(key);
+}
+
+// Tooltip - Generic
+
+var tooltip = d3.select("body")
+	.append("div")
+	.style("position", "absolute")
+	.style("z-index", "10")
+	.style("visibility", "hidden");
+
+// Tooltip - Custom
+
+tooltip
+  .style("background-color", "white")
+  .style("border", "1px solid black")
+  .style("border-radius", "5px")
+  .style("padding", "0 2px");
+
+function hideTooltip() {
+  tooltip.style("visibility", "hidden");
+}
+
+function moveTooltip(key, value) {
+  tooltip.text(key + ": " + value + "%");
+  tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+}
+
+function showTooltip() {
+  tooltip.style("visibility", "visible");
 }
