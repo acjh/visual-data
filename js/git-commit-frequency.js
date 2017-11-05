@@ -1,13 +1,26 @@
+// Config
+
 var margin = { top: 50, right: 0, bottom: 100, left: 30 },
     width = 960 - margin.left - margin.right,
     height = 430 - margin.top - margin.bottom,
     buckets = 9,
     colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"], // alternatively colorbrewer.YlGnBu[9]
     days = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
-    times = Array.apply(null, {length: 52}).map(Number.call, function (i) { return i + 1; }); // [1, 2, ..., 52]
+    times = Array.apply(null, {length: 52}).map(Number.call, function (i) { return i + 1; }), // [1, 2, ..., 52]
     gridSize = Math.floor(width / times.length),
     legendElementWidth = gridSize * 2,
     datasets = ["data/git-commit-frequency.json"];
+
+// Config - Runtime
+
+var numWeeksToShow = 52;
+
+function recalculateConfig() {
+    gridSize = Math.floor(width / times.length);
+    legendElementWidth = gridSize * 2;
+}
+
+// Draw
 
 var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
@@ -15,7 +28,8 @@ var svg = d3.select("#chart").append("svg")
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-var dayLabels = svg.selectAll(".dayLabel")
+function setDayLabels() {
+  var dayLabels = svg.selectAll(".dayLabel")
     .data(days)
     .enter().append("text")
       .text(function (d) { return d; })
@@ -24,8 +38,10 @@ var dayLabels = svg.selectAll(".dayLabel")
       .style("text-anchor", "end")
       .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
       .attr("class", function (d, i) { return ((i >= 0 && i <= 4) ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis"); });
+}
 
-var timeLabels = svg.selectAll(".timeLabel")
+function setTimeLabels() {
+  var timeLabels = svg.selectAll(".timeLabel")
     .data(times)
     .enter().append("text")
       .text(function(d) { return d; })
@@ -34,24 +50,30 @@ var timeLabels = svg.selectAll(".timeLabel")
       .style("text-anchor", "middle")
       .attr("transform", "translate(" + gridSize / 2 + ", -6)")
       .attr("class", function(d, i) { return ((i >= 7 && i <= 16) ? "timeLabel mono axis axis-worktime" : "timeLabel mono axis"); });
+}
 
 var heatmapChart = function(jsonFile) {
   d3.json(jsonFile,
   function(jsonData) {
     /* Start */
     var data = [];
-    var day = 1;
-    var week = 1;
-    jsonData.forEach(function(d) {
-      for (var i = 0; i < days.length; i++) {
+    for (var week = 0; week < numWeeksToShow; week++) {
+      for (var day = 0; day < days.length; day++) {
         data.push({
-          day: i + 1,
-          hour: week, // week
-          value: d.days[i]
+          day: day + 1,
+          hour: week + 1,
+          value: jsonData[week].days[day]
         });
       }
-      week++;
+    };
+    var offset = new Date(jsonData[0].week * 1000).getWeekNumber();
+    times = Array.apply(null, {length: numWeeksToShow}).map(Number.call, function (i) {
+      var actualWeek = (i + offset) % (52 + 1);
+      return actualWeek + (actualWeek < offset ? 1 : 0);
     });
+    recalculateConfig();
+    setDayLabels();
+    setTimeLabels();
     /* End */
     var colorScale = d3.scale.quantile()
         .domain([0, buckets - 1, d3.max(data, function (d) { return d.value; })])
@@ -103,4 +125,17 @@ var heatmapChart = function(jsonFile) {
   });
 };
 
+// Functions
+
+Date.prototype.getWeekNumber = function(){
+  var d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
+  var dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  var yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1)/7)
+};
+
+// Run
+
+numWeeksToShow = 25;
 heatmapChart(datasets[0]);
