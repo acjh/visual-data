@@ -83,10 +83,10 @@ var heatmapChart = function(jsonFile) {
     recalculateConfig();
     setDayLabels();
     setTimeLabels();
-    /* End */
-    var colorScale = d3.scale.quantile()
-        .domain([0, buckets - 1, d3.max(data, function (d) { return d.value; })])
+    var colorScale = d3.scale.ordinal()
+        .domain([0, 1, 2, 3, 4, 5, 6, 7])
         .range(colors);
+    /* End */
 
     var cards = svg.selectAll(".hour")
         .data(data, function(d) {return d.day+':'+d.hour;});
@@ -116,7 +116,7 @@ var heatmapChart = function(jsonFile) {
     cards.exit().remove();
 
     var legend = svg.selectAll(".legend")
-        .data([0].concat(colorScale.quantiles()), function(d) { return d; });
+        .data(colorScale.domain(), function(d) { return d; });
 
     legend.enter().append("g")
         .attr("class", "legend");
