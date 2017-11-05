@@ -1,3 +1,9 @@
+// Config
+
+var groupName = "year";
+
+// Base
+
 var svg = d3.select("svg"),
     margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = +svg.attr("width") - margin.left - margin.right,
@@ -25,7 +31,7 @@ d3.csv("data/online-shoppers-by-age-group.csv", function(d, i, columns) {
 
   var keys = data.columns.slice(1);
 
-  x0.domain(data.map(function(d) { return d.State; }));
+  x0.domain(data.map(function(d) { return d[groupName]; }));
   x1.domain(keys).rangeRound([0, x0.bandwidth()]);
   y.domain([0, d3.max(data, function(d) { return d3.max(keys, function(key) { return d[key]; }); })]).nice();
 
@@ -33,7 +39,7 @@ d3.csv("data/online-shoppers-by-age-group.csv", function(d, i, columns) {
     .selectAll("g")
     .data(data)
     .enter().append("g")
-      .attr("transform", function(d) { return "translate(" + x0(d.State) + ",0)"; })
+      .attr("transform", function(d) { return "translate(" + x0(d[groupName]) + ",0)"; })
     .selectAll("rect")
     .data(function(d) { return keys.map(function(key) { return {key: key, value: d[key]}; }); })
     .enter().append("rect")
