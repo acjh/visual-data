@@ -100,7 +100,7 @@ d3.csv("data/online-shoppers-by-age-group.csv", function(d, i, columns) {
       .on("mouseover", fadeOnOthers)
       .on("mouseout", fadeOffAll)
       /* End */
-      .attr("x", width - 19)
+      .attr("x", width / 2)
       .attr("width", 19)
       .attr("height", 19)
       .attr("fill", z);
@@ -111,7 +111,7 @@ d3.csv("data/online-shoppers-by-age-group.csv", function(d, i, columns) {
       .on("mouseover", fadeOnOthers)
       .on("mouseout", fadeOffAll)
       /* End */
-      .attr("x", width - 24)
+      .attr("x", width / 2 - 5)
       .attr("y", 9.5)
       .attr("dy", "0.32em")
       .text(function(d) { return d; });
