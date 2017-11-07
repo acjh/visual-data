@@ -131,9 +131,8 @@ var heatmapChart = function(jsonFile) {
 
     cards.enter().append("rect")
         /* Start */
-        .on("mouseover", function(d) { showTooltip(); })
-        .on("mousemove", function(d) { moveTooltip(d.value + " commits · " + d.date.toDateString()); })
-        .on("mouseout", function(d) { hideTooltip(); })
+        .on("mouseover", tip.show)
+        .on("mouseout", tip.hide)
         /* End */
         .attr("x", function(d) { return (d.hour - 1) * gridSize; })
         .attr("y", function(d) { return (d.day - 1) * gridSize; })
@@ -188,31 +187,13 @@ document.getElementById("show-all-weeks").onclick = function (e) {
   heatmapChart(datasets[0]);
 }
 
-// Tooltip - Generic
+// Tooltip
 
-var tooltip = d3.select("body")
-	.append("div")
-	.style("position", "absolute")
-	.style("z-index", "10")
-	.style("visibility", "hidden");
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    return d.value + " commits · " + d.date.toDateString();
+  });
 
-// Tooltip - Custom
-
-tooltip
-  .style("background-color", "black")
-  .style("color", "white")
-  .style("border-radius", "5px")
-  .style("padding", "0 3px");
-
-function hideTooltip() {
-  tooltip.style("visibility", "hidden");
-}
-
-function moveTooltip(value) {
-  tooltip.text(value);
-  tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
-}
-
-function showTooltip() {
-  tooltip.style("visibility", "visible");
-}
+svg.call(tip);
