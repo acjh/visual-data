@@ -71,11 +71,12 @@ var heatmapChart = function(jsonFile) {
         data.push({
           day: day + 1,
           hour: week + 1,
-          value: jsonData[week].days[day]
+          value: jsonData[week].days[day],
+          date: new Date(jsonData[week].week * 1000 + day * 86400000)
         });
       }
     };
-    var offset = new Date(jsonData[0].week * 1000).getWeekNumber();
+    var offset = data[0].date.getWeekNumber();
     times = Array.apply(null, {length: numWeeksToShow}).map(Number.call, function (i) {
       var actualWeek = (i + offset) % (52 + 1);
       return actualWeek + (actualWeek < offset ? 1 : 0);
@@ -96,7 +97,7 @@ var heatmapChart = function(jsonFile) {
     cards.enter().append("rect")
         /* Start */
         .on("mouseover", function(d) { showTooltip(); })
-        .on("mousemove", function(d) { moveTooltip(d.value); })
+        .on("mousemove", function(d) { moveTooltip(d.date.toDateString() + " - " + d.value); })
         .on("mouseout", function(d) { hideTooltip(); })
         /* End */
         .attr("x", function(d) { return (d.hour - 1) * gridSize; })
