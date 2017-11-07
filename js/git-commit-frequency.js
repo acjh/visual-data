@@ -17,7 +17,7 @@ var numWeeksToShow = 52;
 
 function recalculateConfig() {
     gridSize = Math.floor(width / times.length);
-    legendElementWidth = gridSize * 2;
+    legendElementWidth = 37;
 }
 
 // Runtime variables
@@ -161,14 +161,14 @@ var heatmapChart = function(jsonFile) {
       .attr("x", function(d, i) { return legendElementWidth * i; })
       .attr("y", height)
       .attr("width", legendElementWidth)
-      .attr("height", gridSize / 2)
+      .attr("height", legendElementWidth)
       .style("fill", function(d, i) { return colors[i]; });
 
     legend.append("text")
       .attr("class", "mono")
-      .text(function(d) { return "≥ " + Math.round(d); })
-      .attr("x", function(d, i) { return legendElementWidth * i; })
-      .attr("y", height + gridSize);
+      .text(function(d) { return Math.round(d); })
+      .attr("x", function(d, i) { return legendElementWidth * (i + 0.4); })
+      .attr("y", height + legendElementWidth * 1.5);
 
     legend.exit().remove();
 
