@@ -20,7 +20,14 @@ function recalculateConfig() {
     legendElementWidth = gridSize * 2;
 }
 
+// Runtime variables
+
+var weeksInMilliseconds;
+
 // Formatters
+
+var getMonth = d3.time.format('%b');
+var getMonthAndYear = d3.time.format('%b\n%Y');
 
 Date.prototype.getWeekNumber = function () {
   var d = new Date(Date.UTC(this.getFullYear(), this.getMonth(), this.getDate()));
@@ -60,10 +67,27 @@ function setDayLabels() {
 }
 
 function setTimeLabels() {
+  var prevDate;
   var timeLabels = svg.selectAll(".timeLabel")
-    .data(times)
+    .data(weeksInMilliseconds)
     .enter().append("text")
-      .text(function(d) { return d; })
+      .text(function(d, i) {
+        if (i === 0) {
+          // First week
+          prevDate = new Date(d);
+          return getMonthAndYear(prevDate);
+        }
+        if (prevDate.getMonth() === new Date(d).getMonth()) {
+          // Repeated month
+          return "";
+        }
+        prevDate = new Date(d);
+        if (prevDate.getMonth() === 0) {
+          // New year
+          return getMonthAndYear(prevDate);
+        }
+        return getMonth(prevDate);
+      })
       .attr("x", function(d, i) { return i * gridSize; })
       .attr("y", 0)
       .style("text-anchor", "middle")
@@ -75,6 +99,7 @@ var heatmapChart = function(jsonFile) {
   d3.json(jsonFile,
   function(jsonData) {
     /* Start */
+    weeksInMilliseconds = jsonData.map(d => d.week * 1000);
     var data = [];
     for (var week = 0; week < numWeeksToShow; week++) {
       for (var day = 0; day < days.length; day++) {
@@ -82,7 +107,7 @@ var heatmapChart = function(jsonFile) {
           day: day + 1,
           hour: week + 1,
           value: jsonData[week].days[day],
-          date: new Date(jsonData[week].week * 1000 + day * 86400000)
+          date: new Date(weeksInMilliseconds[week] + day * 86400000)
         });
       }
     };
