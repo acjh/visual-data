@@ -132,7 +132,7 @@ var heatmapChart = function(jsonFile) {
     cards.enter().append("rect")
         /* Start */
         .on("mouseover", function(d) { showTooltip(); })
-        .on("mousemove", function(d) { moveTooltip(d.date.toDateString() + " - " + d.value); })
+        .on("mousemove", function(d) { moveTooltip(d.value + " commits · " + d.date.toDateString()); })
         .on("mouseout", function(d) { hideTooltip(); })
         /* End */
         .attr("x", function(d) { return (d.hour - 1) * gridSize; })
@@ -199,10 +199,10 @@ var tooltip = d3.select("body")
 // Tooltip - Custom
 
 tooltip
-  .style("background-color", "white")
-  .style("border", "1px solid black")
+  .style("background-color", "black")
+  .style("color", "white")
   .style("border-radius", "5px")
-  .style("padding", "0 2px");
+  .style("padding", "0 3px");
 
 function hideTooltip() {
   tooltip.style("visibility", "hidden");
